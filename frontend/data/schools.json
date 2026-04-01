@@ -1,0 +1,101 @@
+[
+  {
+    "id": "s1",
+    "slug": "tech-university",
+    "name": "Tech University",
+    "description": "Leading the way in technology and innovation.",
+    "logo": "https://api.dicebear.com/7.x/initials/svg?seed=TU",
+    "banner": "https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=1000",
+    "location": "San Francisco, CA",
+    "tuition": "$15,000 - $25,000",
+    "registration_fields": [
+      {
+        "id": "f1",
+        "name": "full_name",
+        "label": "Full Name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "id": "f2",
+        "name": "email",
+        "label": "Email Address",
+        "type": "email",
+        "required": true
+      },
+      {
+        "id": "f3",
+        "name": "phone",
+        "label": "Phone Number",
+        "type": "phone",
+        "required": true
+      },
+      {
+        "id": "f4",
+        "name": "program",
+        "label": "Desired Program",
+        "type": "select",
+        "options": [
+          "Computer Science",
+          "Data Science",
+          "AI",
+          "Cybersecurity"
+        ],
+        "required": true
+      },
+      {
+        "id": "f5",
+        "name": "statement",
+        "label": "Personal Statement",
+        "type": "textarea",
+        "required": false
+      }
+    ]
+  },
+  {
+    "id": "s2",
+    "slug": "arts-academy",
+    "name": "Global Arts Academy",
+    "description": "Nurturing creativity and artistic excellence.",
+    "logo": "https://api.dicebear.com/7.x/initials/svg?seed=GAA",
+    "banner": "https://images.unsplash.com/photo-1541339907198-e08756ebafe3?q=80&w=1000",
+    "location": "New York, NY",
+    "tuition": "$12,000 - $20,000",
+    "registration_fields": [
+      {
+        "id": "f1",
+        "name": "full_name",
+        "label": "Full Name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "id": "f2",
+        "name": "email",
+        "label": "Email Address",
+        "type": "email",
+        "required": true
+      },
+      {
+        "id": "f3",
+        "name": "portfolio_url",
+        "label": "Portfolio Link",
+        "type": "text",
+        "required": true
+      },
+      {
+        "id": "f4",
+        "name": "major",
+        "label": "Major",
+        "type": "select",
+        "options": [
+          "Fine Arts",
+          "Graphic Design",
+          "Music",
+          "Drama"
+        ],
+        "required": true
+      }
+    ]
+  }
+]

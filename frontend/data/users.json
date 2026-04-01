@@ -1,0 +1,49 @@
+[
+  {
+    "id": "u1",
+    "email": "student@example.com",
+    "name": "John Student",
+    "role": "student",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
+    "schoolId": "s1"
+  },
+  {
+    "id": "u2",
+    "email": "lecturer@example.com",
+    "name": "Dr. Smith",
+    "role": "lecturer",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Smith",
+    "schoolId": "s1"
+  },
+  {
+    "id": "u3",
+    "email": "admin@example.com",
+    "name": "School Admin",
+    "role": "school_admin",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Admin",
+    "schoolId": "s1"
+  },
+  {
+    "id": "u4",
+    "email": "platform@example.com",
+    "name": "Platform Admin",
+    "role": "platform_admin",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Platform"
+  },
+  {
+    "id": "u5",
+    "email": "finance@example.com",
+    "name": "Finance Officer",
+    "role": "finance",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Finance",
+    "schoolId": "s1"
+  },
+  {
+    "id": "u6",
+    "email": "librarian@example.com",
+    "name": "Librarian",
+    "role": "librarian",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Library",
+    "schoolId": "s1"
+  }
+]

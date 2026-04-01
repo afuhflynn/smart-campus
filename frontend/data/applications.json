@@ -1,0 +1,28 @@
+[
+  {
+    "id": "app1",
+    "schoolId": "s1",
+    "applicant_email": "newstudent@example.com",
+    "data": {
+      "full_name": "Alice Cooper",
+      "email": "newstudent@example.com",
+      "phone": "1234567890",
+      "program": "Computer Science"
+    },
+    "status": "pending",
+    "submitted_at": "2026-01-10T10:00:00Z"
+  },
+  {
+    "id": "app2",
+    "schoolId": "s1",
+    "applicant_email": "student@example.com",
+    "data": {
+      "full_name": "John Student",
+      "email": "student@example.com",
+      "phone": "0987654321",
+      "program": "AI"
+    },
+    "status": "approved",
+    "submitted_at": "2026-01-05T14:30:00Z"
+  }
+]
