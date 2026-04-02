@@ -16,6 +16,7 @@ import {
 } from "@/types/api.types";
 import { useAuthStore } from "@/store/use-auth-store";
 import { useEffect } from "react";
+import { useRedirect } from "./use-redirect";
 
 export function useSignUp() {
   const router = useRouter();
@@ -33,7 +34,6 @@ export function useSignUp() {
 }
 
 export function useLogIn() {
-  const router = useRouter();
   return useMutation({
     mutationKey: ["signup"],
     mutationFn: (data: LogInTypes) => api.mutations.auth.login(data),
@@ -41,11 +41,7 @@ export function useLogIn() {
       toast.success("Login successful");
 
       if (!data?.user) return toast.error("Signin failed");
-
-      // @todo: make this better later
-      if (data?.user.role === "student") {
-        router.push("/");
-      }
+      useRedirect(data.user.role);
     },
     onError(error) {
       toast.error(error.message);

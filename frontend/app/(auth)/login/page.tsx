@@ -23,8 +23,8 @@ import {
 import { GraduationCap, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useLogIn, useUserProfile } from "@/hooks";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useRedirect } from "@/hooks/use-redirect";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -34,11 +34,10 @@ const loginSchema = z.object({
 export default function LoginPage() {
   const { isPending, mutateAsync: handleLogin } = useLogIn();
   const { data, isPending: loadingUserProfile } = useUserProfile();
-  const router = useRouter();
 
   useEffect(() => {
     if (data?.user && !loadingUserProfile) {
-      router.push("/"); // @todo: Use correct user role later for redirect
+      useRedirect(data.user.role);
     }
   }, [data?.user]);
 
