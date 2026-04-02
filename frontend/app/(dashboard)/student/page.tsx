@@ -41,15 +41,17 @@ const gradesData = [
 ];
 
 import { RoleGuard } from "@/components/auth/role-guard";
+import { useUserProfile } from "@/hooks";
 
 export default function StudentDashboard() {
+  const { data, isPending } = useUserProfile();
   return (
     <RoleGuard allowedRoles={["student"]}>
       <DashboardLayout>
         <div className="space-y-8">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              Welcome back, John!
+              Welcome back, {data?.user.name ?? "Users"}!
             </h1>
             <p className="text-muted-foreground">
               Here's what's happening with your studies today.

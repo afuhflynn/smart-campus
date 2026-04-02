@@ -1,5 +1,7 @@
 "use client";
 
+import { useUserProfile } from "@/hooks";
+import { useRedirect } from "@/hooks/use-redirect";
 import { useAuthStore } from "@/store/use-auth-store";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, ReactNode } from "react";
@@ -11,37 +13,31 @@ interface RoleGuardProps {
 }
 
 export function RoleGuard({ children, allowedRoles }: RoleGuardProps) {
-  const { user, token } = useAuthStore();
+  const { data, isPending } = useUserProfile();
   const router = useRouter();
   const pathname = usePathname();
+  const { redirectTo } = useRedirect();
 
   useEffect(() => {
-    if (!token || !user) {
-      router.push(`/auth/login?redirect=${pathname}`);
+    if (isPending) {
+      return;
+    }
+    if (!data?.user) {
+      router.push(`/login?redirect=${pathname}`);
       return;
     }
 
-    if (allowedRoles && !allowedRoles.includes(user.role)) {
+    if (allowedRoles && !allowedRoles.includes(data?.user.role!)) {
       toast.error("Access Denied", {
         description: "You do not have permission to access this page.",
       });
 
-      // Redirect to their respective dashboard
-      const roleRedirects: Record<string, string> = {
-        student: "/student",
-        lecturer: "/lecturer",
-        school_admin: "/school",
-        platform_admin: "/admin",
-        finance: "/finance",
-        librarian: "/library",
-      };
-
-      router.push(roleRedirects[user.role] || "/");
+      redirectTo(data.user.role!);
     }
-  }, [user, token, allowedRoles, router, pathname]);
+  }, [allowedRoles, router, pathname, redirectTo, data?.user]);
 
-  if (!token || !user) return null;
-  if (allowedRoles && !allowedRoles.includes(user.role)) return null;
+  if (!data?.user) return null;
+  if (allowedRoles && !allowedRoles.includes(data.user.role)) return null;
 
   return <>{children}</>;
 }

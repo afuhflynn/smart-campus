@@ -1,11 +1,11 @@
 "use client";
 
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { User } from "@/store/use-auth-store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Bell, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { User } from "@/types/api.types";
 
 interface TopbarProps {
   user: User;
@@ -13,16 +13,16 @@ interface TopbarProps {
 
 export function Topbar({ user }: TopbarProps) {
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-md md:px-8">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-md md:px-8 md:py-8 py-6">
       <div className="flex items-center gap-4">
-        <SidebarTrigger className="md:hidden" />
-        <div className="relative hidden md:block w-72">
+        <SidebarTrigger />
+        {/* <div className="relative hidden md:block w-72">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search anything..."
             className="h-10 rounded-xl pl-9 bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-primary/20"
           />
-        </div>
+        </div> */}
       </div>
 
       <div className="flex items-center gap-4">
@@ -42,7 +42,7 @@ export function Topbar({ user }: TopbarProps) {
             </Badge>
           </div>
           <Avatar className="h-10 w-10 rounded-xl border-2 border-primary/10">
-            <AvatarImage src={user.avatar} />
+            <AvatarImage src={user.image} />
             <AvatarFallback className="rounded-xl bg-primary/10 text-primary font-bold">
               {user.name.charAt(0)}
             </AvatarFallback>

@@ -5,7 +5,12 @@
  * =================================
  */
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { api } from "@/lib/api-client";
@@ -34,6 +39,7 @@ export function useSignUp() {
 }
 
 export function useLogIn() {
+  const { redirectTo } = useRedirect();
   return useMutation({
     mutationKey: ["signup"],
     mutationFn: (data: LogInTypes) => api.mutations.auth.login(data),
@@ -41,7 +47,7 @@ export function useLogIn() {
       toast.success("Login successful");
 
       if (!data?.user) return toast.error("Signin failed");
-      useRedirect(data.user.role);
+      redirectTo(data.user.role);
     },
     onError(error) {
       toast.error(error.message);
@@ -49,33 +55,33 @@ export function useLogIn() {
   });
 }
 
-export function useUserProfile() {
-  const { setUser, user } = useAuthStore();
+export function useUserProfile(location?: string) {
+  const router = useRouter();
   const result = useQuery({
     queryKey: ["user-profile"],
     queryFn: () => {
-      // fetch if only the user data does not exist in local storage
-      return user
-        ? {
-            user,
-            success: true,
-          }
-        : api.queries.auth.me();
+      return api.queries.auth.me();
     },
     staleTime: 24 * 60 * 60 * 100, // 24 hours (1 day)
     gcTime: 0,
   });
 
   useEffect(() => {
-    if (!result.isPending && result.data) {
-      setUser(result.data.user);
+    if (
+      result.error &&
+      !result.isPending &&
+      location !== "/login" &&
+      location !== "/signup"
+    ) {
+      router.push("/login");
     }
-  }, [result.data?.user]);
+  }, [result.error]);
 
   return result;
 }
 
 export function useLogout() {
+  const queryClient = new QueryClient();
   const router = useRouter();
   const { setUser } = useAuthStore();
   return useMutation({
@@ -85,7 +91,13 @@ export function useLogout() {
     },
     onSuccess() {
       setUser(null);
-      router.push("/login");
+      queryClient.invalidateQueries({
+        queryKey: ["user-profile"],
+      });
+      queryClient.cancelQueries({
+        queryKey: ["user-profile"],
+      });
+      window.location.href = "/login";
     },
     onError(error) {
       toast.error(error.message);

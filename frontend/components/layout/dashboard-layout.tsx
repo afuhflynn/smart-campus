@@ -24,9 +24,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-muted/30">
+      <div className="flex h-screen w-screen bg-muted/30 overflow-hidden">
         <AppSidebar user={user} />
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col flex-1 overflow-auto">
           <Topbar user={user} />
           <main className="flex-1 p-4 md:p-8">
             <div className="container max-w-7xl mx-auto">{children}</div>

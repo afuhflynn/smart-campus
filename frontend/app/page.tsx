@@ -1,3 +1,5 @@
+"use client";
+
 import { PublicLayout } from "@/components/layout/public-layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,10 +10,21 @@ import {
   GraduationCap,
   Star,
 } from "lucide-react";
-import Link from "next/link";
 import { SearchBar } from "@/components/home/search-bar";
+import { useUserProfile } from "@/hooks";
+import { useRedirect } from "@/hooks/use-redirect";
+import { useEffect } from "react";
 
 export default function Home() {
+  const { data, isPending } = useUserProfile();
+  const { redirectTo } = useRedirect();
+
+  useEffect(() => {
+    if (isPending) return;
+    if (data?.user) {
+      redirectTo(data.user.role);
+    }
+  }, [data?.user]);
   return (
     <PublicLayout>
       {/* Hero Section */}

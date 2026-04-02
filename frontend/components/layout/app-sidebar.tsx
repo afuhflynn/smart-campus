@@ -3,7 +3,6 @@
 import {
   LayoutDashboard,
   BookOpen,
-  Calendar,
   FileText,
   CreditCard,
   Bell,
@@ -11,7 +10,6 @@ import {
   LogOut,
   GraduationCap,
   Users,
-  School,
   Library,
   ClipboardCheck,
   BarChart3,
@@ -28,11 +26,11 @@ import {
   SidebarGroupLabel,
   SidebarGroupContent,
 } from "@/components/ui/sidebar";
-import { useAuthStore } from "@/store/use-auth-store";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { User } from "@/types/api.types";
+import { useLogout } from "@/hooks";
 
 interface AppSidebarProps {
   user: User;
@@ -40,7 +38,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ user }: AppSidebarProps) {
   const pathname = usePathname();
-  const logout = useAuthStore((state) => state.logout);
+  const { mutate: logout, isPending: logingOut } = useLogout();
   const router = useRouter();
 
   const handleLogout = () => {
@@ -107,7 +105,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
   const navItems = getNavItems();
 
   return (
-    <Sidebar collapsible="icon" className="border-r bg-background">
+    <Sidebar collapsible="icon" className="border-r bg-background h-full">
       <SidebarHeader className="p-4">
         <Link href="/" className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
@@ -164,6 +162,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
             <SidebarMenuButton
               onClick={handleLogout}
               tooltip="Logout"
+              disabled={logingOut}
               className="h-11 rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive"
             >
               <LogOut className="h-5 w-5" />

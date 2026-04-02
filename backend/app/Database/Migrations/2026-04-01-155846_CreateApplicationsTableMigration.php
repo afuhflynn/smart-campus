@@ -55,8 +55,8 @@ class CreateApplicationsTableMigration extends Migration
         ]);
 
         $this->forge->addPrimaryKey("id");
-        $this->forge->addForeignKey("school_id", "shcools", "id", "CASCADE", "CASCADE");
-        $this->forge->addForeignKey("applicant_user_id", "shcools", "id", "CASCADE", "CASCADE");
+        $this->forge->addForeignKey("school_id", "schools", "id", "CASCADE", "CASCADE");
+        $this->forge->addForeignKey("applicant_user_id", "schools", "id", "CASCADE", "CASCADE");
         $this->forge->createTable("applications");
     }
 

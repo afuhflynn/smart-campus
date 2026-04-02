@@ -33,11 +33,12 @@ const loginSchema = z.object({
 
 export default function LoginPage() {
   const { isPending, mutateAsync: handleLogin } = useLogIn();
-  const { data, isPending: loadingUserProfile } = useUserProfile();
+  const { data, isPending: loadingUserProfile } = useUserProfile("/login");
+  const { redirectTo } = useRedirect();
 
   useEffect(() => {
     if (data?.user && !loadingUserProfile) {
-      useRedirect(data.user.role);
+      redirectTo(data.user.role);
     }
   }, [data?.user]);
 
