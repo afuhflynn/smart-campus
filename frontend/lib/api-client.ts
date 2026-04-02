@@ -1,10 +1,20 @@
 /**
  * =================================
- * IdeasVault API Client
+ * Smart Campus API Client
  * Centralized API interface for all backend calls
  * =================================
  */
 import { privateAxios, publicAxios } from "@/config/axios.config";
+import {
+  ListSchoolsPaginationParams,
+  LoginRespond,
+  LogInTypes,
+  PaginationParams,
+  ProfileRespond,
+  ResponsePagination,
+  School,
+  SignUpTypes,
+} from "@/types/api.types";
 
 // ===========================================
 // API Request Helper
@@ -49,6 +59,7 @@ async function apiRequest<T>(
 
     return response.data;
   } catch (error: unknown) {
+    console.log({ error });
     if (error && typeof error === "object" && "response" in error) {
       const axiosError = error as { response?: { data?: { error?: string } } };
       if (axiosError.response?.data?.error) {
@@ -60,6 +71,47 @@ async function apiRequest<T>(
 }
 
 export const api = {
-  queries: {},
-  mutations: {},
+  queries: {
+    auth: {
+      me: (): Promise<ProfileRespond | null> =>
+        apiRequest("/auth/profile", {
+          method: "GET",
+        }),
+    },
+    schools: {
+      list: (
+        params?: ListSchoolsPaginationParams,
+      ): Promise<{
+        data: School[];
+        success: boolean;
+        pagination: ResponsePagination;
+      } | null> =>
+        apiRequest(
+          `/schools?q=${params?.q}&limit=${params?.limit}&city=${params?.city}&page=${params?.page}`,
+          {
+            method: "GET",
+            isPublic: true,
+          },
+        ),
+    },
+  },
+  mutations: {
+    auth: {
+      signup: (data: SignUpTypes) =>
+        apiRequest("/auth/signup", {
+          method: "POST",
+          isPublic: true,
+          body: data,
+        }),
+      login: (data: LogInTypes): Promise<LoginRespond | null> =>
+        apiRequest("/auth/login", {
+          method: "POST",
+          body: data,
+        }),
+      logout: () =>
+        apiRequest("/auth/logout", {
+          method: "GET",
+        }),
+    },
+  },
 };

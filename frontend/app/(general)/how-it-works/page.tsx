@@ -76,8 +76,14 @@ export default function HowItWorksPage() {
                   </div>
                 ))}
               </div>
-              <Button size="lg" className="rounded-xl px-10 font-bold h-14">
-                Find your School <ArrowRight className="ml-2 h-5 w-5" />
+              <Button
+                size="lg"
+                className="rounded-xl px-10 font-bold h-14"
+                asChild
+              >
+                <Link href={"/schools"}>
+                  Find your School <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
               </Button>
             </div>
             <div className="flex-1 relative">
@@ -99,20 +105,6 @@ export default function HowItWorksPage() {
                       <div className="h-4 w-full bg-muted rounded"></div>
                       <div className="h-4 w-2/3 bg-muted rounded"></div>
                     </div>
-                  </div>
-                </div>
-              </div>
-              {/* Floating Badge */}
-              <div className="absolute -bottom-6 -left-6 p-6 bg-background rounded-3xl shadow-2xl border animate-bounce duration-[3000ms]">
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-2xl bg-green-100 flex items-center justify-center text-green-600">
-                    <CheckCircle2 className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">
-                      Status
-                    </p>
-                    <p className="font-bold">Admitted!</p>
                   </div>
                 </div>
               </div>

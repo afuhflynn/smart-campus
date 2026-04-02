@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const baseURL = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:3000"; // @todo: Fix this later.
+const baseURL =
+  process.env.NEXT_PUBLIC_SERVER_BASE_URL || "http://localhost:8081";
 
 // Public axios instance (no auth required)
 export const publicAxios = axios.create({
@@ -24,9 +25,9 @@ privateAxios.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Redirect to sign-in on unauthorized
+      // Redirect to login on unauthorized
       if (typeof window !== "undefined") {
-        window.location.href = "/sign-in";
+        window.location.href = "/login";
       }
     }
     return Promise.reject(error);

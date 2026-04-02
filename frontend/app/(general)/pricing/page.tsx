@@ -1,19 +1,17 @@
 "use client";
 
 import { PublicLayout } from "@/components/layout/public-layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, ArrowRight } from "lucide-react";
-import Link from "next/link";
 
 const tiers = [
   {
     name: "Basic",
-    price: "$99",
+    price: "10,000 FCFA",
     description: "Perfect for small specialized schools.",
     features: [
-      "Up to 500 students",
+      "Up to 1,000 students",
       "Standard application form",
       "Basic attendance tracking",
       "Email support",
@@ -23,10 +21,10 @@ const tiers = [
   },
   {
     name: "Standard",
-    price: "$299",
+    price: "25,000 FCFA",
     description: "Ideal for growing colleges and academies.",
     features: [
-      "Up to 2,500 students",
+      "Up to 5,000 students",
       "Custom form builder",
       "Advanced analytics",
       "Library & Finance modules",
@@ -75,7 +73,7 @@ export default function PricingPage() {
                 "relative overflow-hidden rounded-[2.5rem] border-0 shadow-xl transition-all duration-300 hover:-translate-y-2",
                 tier.highlight
                   ? "ring-2 ring-primary shadow-primary/10"
-                  : "shadow-muted/50"
+                  : "shadow-muted/50",
               )}
             >
               {tier.highlight && (

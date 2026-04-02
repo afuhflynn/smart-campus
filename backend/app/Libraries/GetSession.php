@@ -19,17 +19,13 @@ class GetSession{
  * }
  */
 static public function getSession(RequestInterface $request) {
-  $Authorization = $request->getServer("HTTP_AUTHORIZATION");
+        $cookies = $_COOKIE;
 
-        if(!$Authorization){
+        if(!$cookies){
             return false;
         }
 
-        $authParts = explode(" ", $Authorization);
-         if(count($authParts) !== 2 || $authParts[0] !== "Bearer"){
-             return false;
-        }
-        $token = $authParts[1];
+        $token = $cookies["jwt"];
         $decoded = [];
         try {
           $decoded =  JWT::decode($token, new Key(getenv("JWT_KEY"), "HS256"));
@@ -51,7 +47,8 @@ static public function getSession(RequestInterface $request) {
             "iss" => $decoded->iss,
             "aud" => $decoded->aud,
             "user" => $user,
-          ]
+          ],
+
         ];
 }
 }

@@ -12,8 +12,12 @@ import {
   LogIn,
   Menu,
   X,
+  LogOut,
 } from "lucide-react";
 import { useState } from "react";
+import { useLogout, useUserProfile } from "@/hooks";
+import { Skeleton } from "../ui/skeleton";
+import { Button } from "../ui/button";
 
 const navItems = [
   { name: "Schools", href: "/schools", icon: Search },
@@ -25,6 +29,8 @@ const navItems = [
 export function Navbar() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { data, isPending } = useUserProfile();
+  const { mutate: logout, isPending: isLogingOut } = useLogout();
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
@@ -48,7 +54,7 @@ export function Navbar() {
                   "px-4 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-accent hover:text-accent-foreground",
                   pathname === item.href
                     ? "text-primary bg-primary/5"
-                    : "text-muted-foreground"
+                    : "text-muted-foreground",
                 )}
               >
                 {item.name}
@@ -57,19 +63,42 @@ export function Navbar() {
           </div>
         </div>
 
-        <div className="hidden md:flex items-center gap-4">
-          <Link
-            href="/auth/login"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Log in
-          </Link>
-          <Link
-            href="/schools"
-            className="inline-flex h-10 items-center justify-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:scale-105 active:scale-95"
-          >
-            Find Schools
-          </Link>
+        <div className="hidden md:flex items-center gap-8">
+          {isPending ? (
+            <>
+              <Skeleton className="py-3 px-4 rounded-full" />
+              <Skeleton className="py-3 px-4 rounded-full" />
+            </>
+          ) : (
+            <>
+              {!data?.user && !data?.success ? (
+                <>
+                  <Link
+                    href="/login"
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    href="/schools"
+                    className="inline-flex h-10 items-center justify-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all active:scale-95"
+                  >
+                    Find Schools
+                  </Link>
+                </>
+              ) : (
+                <Button
+                  variant={"outline"}
+                  onClick={() => logout()}
+                  disabled={isLogingOut}
+                  className="rouned-full"
+                >
+                  <LogOut />
+                  Logout
+                </Button>
+              )}
+            </>
+          )}
         </div>
 
         <button
@@ -92,7 +121,7 @@ export function Navbar() {
                   "flex items-center gap-3 px-4 py-3 text-base font-medium rounded-xl transition-colors",
                   pathname === item.href
                     ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-accent"
+                    : "text-muted-foreground hover:bg-accent",
                 )}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
@@ -101,21 +130,44 @@ export function Navbar() {
               </Link>
             ))}
             <hr className="my-2" />
-            <Link
-              href="/auth/login"
-              className="flex items-center gap-3 px-4 py-3 text-base font-medium text-muted-foreground rounded-xl hover:bg-accent"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <LogIn className="h-5 w-5" />
-              Log in
-            </Link>
-            <Link
-              href="/schools"
-              className="mt-2 flex h-12 items-center justify-center rounded-xl bg-primary text-base font-bold text-primary-foreground shadow-lg shadow-primary/25"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Find Schools
-            </Link>
+            {isPending ? (
+              <>
+                <Skeleton className="py-3 px-4 rounded-full" />
+                <Skeleton className="py-3 px-4 rounded-full" />
+              </>
+            ) : (
+              <>
+                {!data?.user && !data?.success ? (
+                  <>
+                    <Link
+                      href="/auth/login"
+                      className="flex items-center gap-3 px-4 py-3 text-base font-medium text-muted-foreground rounded-xl hover:bg-accent"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <LogIn className="h-5 w-5" />
+                      Log in
+                    </Link>
+                    <Link
+                      href="/schools"
+                      className="mt-2 flex h-12 items-center justify-center rounded-xl bg-primary text-base font-bold text-primary-foreground shadow-lg shadow-primary/25"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Find Schools
+                    </Link>
+                  </>
+                ) : (
+                  <Button
+                    variant={"outline"}
+                    onClick={() => logout()}
+                    disabled={isLogingOut}
+                    className="rounded-full w-full"
+                  >
+                    <LogOut />
+                    Logout
+                  </Button>
+                )}
+              </>
+            )}
           </div>
         </div>
       )}

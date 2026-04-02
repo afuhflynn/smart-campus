@@ -22,17 +22,18 @@ import {
 } from "@/components/ui/card";
 import { GraduationCap, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useLogIn, useUserProfile } from "@/hooks";
-import { useRouter } from "next/navigation";
+import { useSignUp, useUserProfile } from "@/hooks";
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-const loginSchema = z.object({
+const signupSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
+  fullName: z.string().min(2, "Your name must be at least 2 characters"),
 });
 
 export default function LoginPage() {
-  const { isPending, mutateAsync: handleLogin } = useLogIn();
+  const { isPending, mutateAsync: handleSignup } = useSignUp();
   const { data, isPending: loadingUserProfile } = useUserProfile();
   const router = useRouter();
 
@@ -42,16 +43,21 @@ export default function LoginPage() {
     }
   }, [data?.user]);
 
-  const form = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<z.infer<typeof signupSchema>>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
       email: "",
       password: "",
+      fullName: "",
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
-    await handleLogin(values);
+  const onSubmit = async (values: z.infer<typeof signupSchema>) => {
+    await handleSignup({
+      email: values.email,
+      name: values.fullName,
+      password: values.password,
+    });
   };
 
   return (
@@ -70,9 +76,9 @@ export default function LoginPage() {
 
         <Card className="rounded-[2rem] border-0 shadow-2xl shadow-primary/5">
           <CardHeader className="space-y-1 pt-8 px-8">
-            <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
+            <CardTitle className="text-2xl font-bold">Sign Up</CardTitle>
             <CardDescription>
-              Enter your credentials to access your dashboard
+              Enter your credentials to below to signup for an account.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-8">
@@ -81,6 +87,23 @@ export default function LoginPage() {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4"
               >
+                <FormField
+                  control={form.control}
+                  name="fullName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="John Brooke"
+                          {...field}
+                          className="h-12 rounded-xl"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="email"
@@ -103,15 +126,8 @@ export default function LoginPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center justify-between">
-                        <FormLabel>Password</FormLabel>
-                        <Link
-                          href="/auth/forgot"
-                          className="text-xs text-primary hover:underline"
-                        >
-                          Forgot password?
-                        </Link>
-                      </div>
+                      <FormLabel>Password</FormLabel>
+
                       <FormControl>
                         <Input
                           type="password"
@@ -132,7 +148,7 @@ export default function LoginPage() {
                   {isPending ? (
                     <Loader2 className="h-5 w-5 animate-spin" />
                   ) : (
-                    "Log in"
+                    "Sign Up"
                   )}
                 </Button>
               </form>
@@ -140,19 +156,12 @@ export default function LoginPage() {
 
             <div className="mt-8 pt-6 border-t text-center">
               <p className="text-sm text-muted-foreground">
-                Don't have an account?{" "}
+                Already have an account?{" "}
                 <Link
-                  href="/signup"
+                  href="/login"
                   className="text-primary font-semibold hover:underline"
                 >
-                  Sign Up
-                </Link>{" "}
-                or{" "}
-                <Link
-                  href="/schools"
-                  className="text-primary font-semibold hover:underline"
-                >
-                  Find a school to apply
+                  Log In
                 </Link>
               </p>
             </div>

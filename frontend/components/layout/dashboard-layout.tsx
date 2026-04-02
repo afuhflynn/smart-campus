@@ -6,16 +6,20 @@ import { useEffect } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./app-sidebar";
 import { Topbar } from "./topbar";
+import { useUserProfile } from "@/hooks";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, token } = useAuthStore();
+  const { data, isPending } = useUserProfile();
   const router = useRouter();
 
+  const user = data?.user;
+
   useEffect(() => {
-    if (!token || !user) {
+    if (isPending) return;
+    if (!user) {
       router.push("/auth/login");
     }
-  }, [token, user, router]);
+  }, [user, router]);
 
   if (!user) return null;
 

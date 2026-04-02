@@ -5,10 +5,8 @@ namespace App\Filters;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
-use App\Libraries\GetSession;
-use CodeIgniter\Config\Services;
 
-class AuthFilter implements FilterInterface
+class SchoolAdminFilter implements FilterInterface
 {
     /**
      * Do whatever processing this filter needs to do.
@@ -27,15 +25,7 @@ class AuthFilter implements FilterInterface
      */
     public function before(RequestInterface $request, $arguments = null)
     {
-        $result = GetSession::getSession($request);
-
-
-        if($result === false){
-            return Services::response()->setStatusCode(401)->setJSON([
-                "success" => false,
-                "error" => "Unauthorized access",
-            ]);
-        }
+        //
     }
 
     /**

@@ -19,30 +19,22 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useQueryStates, debounce } from "nuqs";
-import { useQuery } from "@tanstack/react-query";
-import { schoolService } from "@/lib/mocks/school-service";
 import Link from "next/link";
 import Image from "next/image";
 import { searchParamsSchema } from "@/nuqs";
+import { useListSchools } from "@/hooks";
 
 export default function SchoolsPage() {
   const [params, setParams] = useQueryStates(searchParamsSchema);
 
-  const { data: schools, isLoading } = useQuery({
-    queryKey: ["schools", params.q, location],
-    queryFn: async () => {
-      const allSchools = await schoolService.getSchools();
-      return allSchools.filter((s) => {
-        const matchesSearch =
-          s.name.toLowerCase().includes(params.q.toLowerCase()) ||
-          s.description.toLowerCase().includes(params.q.toLowerCase());
-        const matchesLocation = s.location
-          .toLowerCase()
-          .includes(params?.city?.toLowerCase() as string);
-        return matchesSearch && matchesLocation;
-      });
-    },
+  const { data, isPending, refetch } = useListSchools({
+    page: params.page,
+    limit: params.limit,
+    city: params.city,
+    q: params.q,
   });
+
+  const schools = data?.data;
 
   return (
     <PublicLayout>
@@ -84,7 +76,7 @@ export default function SchoolsPage() {
                           {
                             limitUrlUpdates: debounce(500),
                             shallow: true,
-                          }
+                          },
                         )
                       }
                     />
@@ -107,7 +99,7 @@ export default function SchoolsPage() {
                           {
                             limitUrlUpdates: debounce(500),
                             shallow: true,
-                          }
+                          },
                         )
                       }
                     />
@@ -152,7 +144,7 @@ export default function SchoolsPage() {
               </Button>
             </div>
 
-            {isLoading ? (
+            {isPending ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[1, 2, 3, 4].map((i) => (
                   <div
@@ -170,7 +162,7 @@ export default function SchoolsPage() {
                   >
                     <div className="relative h-48">
                       <Image
-                        src={school.banner}
+                        src={school.banner as string}
                         alt={school.name}
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -188,12 +180,12 @@ export default function SchoolsPage() {
                             {school.name}
                           </h3>
                           <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                            <MapPin className="h-3 w-3" /> {school.location}
+                            <MapPin className="h-3 w-3" /> {`${school.address}`}
                           </div>
                         </div>
                         <div className="h-12 w-12 rounded-xl border bg-white p-1 shrink-0 shadow-sm">
                           <Image
-                            src={school.logo}
+                            src={school.logo_url as string}
                             alt={school.name}
                             width={48}
                             height={48}
@@ -207,9 +199,12 @@ export default function SchoolsPage() {
                         {school.description}
                       </p>
                       <div className="flex flex-wrap gap-2 mt-4">
-                        <Badge variant="secondary" className="font-normal">
+                        <Badge
+                          variant="secondary"
+                          className="font-normal uppercase"
+                        >
                           <GraduationCap className="h-3 w-3 mr-1" />{" "}
-                          {school.tuition}
+                          {school.abbriviation}
                         </Badge>
                       </div>
                     </CardContent>
@@ -225,7 +220,7 @@ export default function SchoolsPage() {
               </div>
             )}
 
-            {!isLoading && schools?.length === 0 && (
+            {!isPending && schools?.length === 0 && (
               <div className="text-center py-20 bg-muted/20 rounded-4xl border-2 border-dashed">
                 <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-20" />
                 <h3 className="text-lg font-semibold">No schools found</h3>

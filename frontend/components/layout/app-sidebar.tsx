@@ -28,10 +28,11 @@ import {
   SidebarGroupLabel,
   SidebarGroupContent,
 } from "@/components/ui/sidebar";
-import { User, useAuthStore } from "@/store/use-auth-store";
+import { useAuthStore } from "@/store/use-auth-store";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { User } from "@/types/api.types";
 
 interface AppSidebarProps {
   user: User;
@@ -78,9 +79,17 @@ export function AppSidebar({ user }: AppSidebarProps) {
         { title: "Grading", icon: FileText, url: "/lecturer/grading" },
       ],
       school_admin: [
-        { title: "Applications", icon: FileText, url: "/school/applications" },
-        { title: "Students", icon: Users, url: "/school/students" },
-        { title: "Form Builder", icon: Settings, url: "/school/form-builder" },
+        {
+          title: "Applications",
+          icon: FileText,
+          url: "/good-school/applications",
+        },
+        { title: "Students", icon: Users, url: "/good-school/students" },
+        {
+          title: "Form Builder",
+          icon: Settings,
+          url: "/good-school/form-builder",
+        },
       ],
       finance: [
         { title: "Invoices", icon: CreditCard, url: "/finance/invoices" },
@@ -126,7 +135,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
                       "h-11 rounded-xl transition-all",
                       pathname === item.url
                         ? "bg-primary/10 text-primary font-semibold"
-                        : "text-muted-foreground hover:bg-accent"
+                        : "text-muted-foreground hover:bg-accent",
                     )}
                   >
                     <Link href={item.url}>

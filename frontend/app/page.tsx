@@ -19,45 +19,23 @@ export default function Home() {
         <div className="container relative z-10">
           <div className="mx-auto max-w-4xl text-center">
             <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-              </span>
-              Trusted by 50+ Universities Worldwide
+              Trusted by 50+ Universities and Institutions in Cameroon
             </div>
-            <h1 className="text-5xl font-extrabold tracking-tight text-foreground md:text-7xl mb-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
-              Your Future Starts <span className="text-primary">Here.</span>
+            <h1 className="text-5xl font-extrabold tracking-tight text-foreground md:text-7xl mb-6 animate-in fade-in slide-in-from-bottom-6 duration-700 space-y-3 flex-col flex">
+              <span>Architecting the</span>
+              <span>
+                Future of <span className="text-primary">Education</span>
+              </span>
             </h1>
             <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-900">
-              Discover top schools, apply in minutes, and manage your entire
-              campus life with the world's most advanced education platform.
+              SmartCampus is a refined ecosystem designed for institutions that
+              prioritize architectural precision in digital management.
             </p>
 
             <div className="mx-auto max-w-2xl animate-in fade-in slide-in-from-bottom-10 duration-1000">
               <div className="relative group">
                 <div className="absolute -inset-1 rounded-2xl bg-linear-to-r from-primary to-secondary opacity-25 blur transition duration-1000 group-hover:opacity-40"></div>
                 <SearchBar />
-              </div>
-              <div className="mt-4 flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
-                <span>Popular:</span>
-                <Link
-                  href="/schools?q=Computer+Science"
-                  className="hover:text-primary transition-colors"
-                >
-                  Computer Science
-                </Link>
-                <Link
-                  href="/schools?q=Business"
-                  className="hover:text-primary transition-colors"
-                >
-                  Business
-                </Link>
-                <Link
-                  href="/schools?q=Engineering"
-                  className="hover:text-primary transition-colors"
-                >
-                  Engineering
-                </Link>
               </div>
             </div>
           </div>
