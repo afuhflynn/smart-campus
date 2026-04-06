@@ -38,7 +38,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (data?.user && !loadingUserProfile) {
-      redirectTo(data.user.role);
+      redirectTo(data.user.role, data.school.slug);
     }
   }, [data?.user]);
 

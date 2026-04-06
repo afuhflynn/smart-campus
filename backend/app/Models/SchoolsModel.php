@@ -31,7 +31,7 @@ class SchoolsModel extends Model
         "authorization_date",
         "school_type",
         "banner",
-        "abbriviation"
+        "abbreviation"
     ];
 
     protected bool $allowEmptyInserts = false;

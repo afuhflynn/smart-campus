@@ -6,12 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Bell, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { User } from "@/types/api.types";
+import { UserButton } from "../user/user-button";
 
 interface TopbarProps {
   user: User;
+  schoolSlug?: string;
 }
 
-export function Topbar({ user }: TopbarProps) {
+export function Topbar({ user, schoolSlug }: TopbarProps) {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-md md:px-8 md:py-8 py-6">
       <div className="flex items-center gap-4">
@@ -41,12 +43,7 @@ export function Topbar({ user }: TopbarProps) {
               {user.role.replace("_", " ")}
             </Badge>
           </div>
-          <Avatar className="h-10 w-10 rounded-xl border-2 border-primary/10">
-            <AvatarImage src={user.image} />
-            <AvatarFallback className="rounded-xl bg-primary/10 text-primary font-bold">
-              {user.name.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
+          {user && <UserButton user={user} schoolSlug={schoolSlug} />}
         </div>
       </div>
     </header>

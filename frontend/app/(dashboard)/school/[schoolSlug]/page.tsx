@@ -16,13 +16,21 @@ import {
   Search,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { RoleGuard } from "@/components/auth/role-guard";
+import { useParams, usePathname } from "next/navigation";
+import { useApplications, useSchool } from "@/hooks";
 
 export default function SchoolAdminDashboard() {
+  const params = useParams();
+  const { schoolSlug } = params;
+  const { data } = useSchool(schoolSlug as string);
+  const school = data?.school;
+  const pathName = usePathname();
+  const { data: applicationsData, isLoading } = useApplications(school?.id!);
+  const apps = applicationsData?.applications;
   return (
     <RoleGuard allowedRoles={["school_admin"]}>
       <DashboardLayout>
@@ -37,10 +45,12 @@ export default function SchoolAdminDashboard() {
               </p>
             </div>
             <div className="flex gap-3">
-              <Button variant="outline" className="rounded-xl">
+              {/* <Button variant="outline" className="rounded-xl">
                 Download Reports
+              </Button> */}
+              <Button className="rounded-xl font-bold" asChild>
+                <Link href={`${pathName}/students`}>Add New Student</Link>
               </Button>
-              <Button className="rounded-xl font-bold">Add New Student</Button>
             </div>
           </div>
 
@@ -126,85 +136,57 @@ export default function SchoolAdminDashboard() {
               </CardHeader>
               <CardContent className="p-8">
                 <div className="space-y-4">
-                  {[
-                    {
-                      name: "Alice Cooper",
-                      program: "Computer Science",
-                      date: "Jan 15, 2026",
-                      status: "pending",
-                      avatar:
-                        "https://api.dicebear.com/7.x/avataaars/svg?seed=Alice",
-                    },
-                    {
-                      name: "Bob Wilson",
-                      program: "Data Science",
-                      date: "Jan 14, 2026",
-                      status: "approved",
-                      avatar:
-                        "https://api.dicebear.com/7.x/avataaars/svg?seed=Bob",
-                    },
-                    {
-                      name: "Charlie Brown",
-                      program: "AI",
-                      date: "Jan 14, 2026",
-                      status: "pending",
-                      avatar:
-                        "https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie",
-                    },
-                    {
-                      name: "Diana Prince",
-                      program: "Cybersecurity",
-                      date: "Jan 13, 2026",
-                      status: "rejected",
-                      avatar:
-                        "https://api.dicebear.com/7.x/avataaars/svg?seed=Diana",
-                    },
-                  ].map((app, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between p-4 rounded-2xl bg-muted/30 hover:bg-muted/50 transition-colors group"
-                    >
-                      <div className="flex items-center gap-4">
-                        <Avatar className="h-10 w-10 rounded-xl">
-                          <AvatarImage src={app.avatar} />
-                          <AvatarFallback>{app.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h4 className="font-bold text-sm">{app.name}</h4>
-                          <p className="text-xs text-muted-foreground">
-                            {app.program} • {app.date}
-                          </p>
+                  {apps?.map((app, i) => {
+                    const payload = JSON.parse(app.payload as any);
+                    return (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between p-4 rounded-2xl bg-muted/30 hover:bg-muted/50 transition-colors group"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div>
+                            <h4 className="font-bold text-sm">
+                              {app.applicant_name}
+                            </h4>
+                            <p className="text-xs text-muted-foreground">
+                              {payload?.programme} •{" "}
+                              {new Date(app.created_at).toDateString()}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <Badge
+                            className={cn(
+                              "rounded-lg font-bold capitalize",
+                              app.status === "pending"
+                                ? "bg-orange-100 text-orange-700"
+                                : app.status === "approved"
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-red-100 text-red-700",
+                            )}
+                          >
+                            {app.status}
+                          </Badge>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <ArrowRight className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <Badge
-                          className={cn(
-                            "rounded-lg font-bold capitalize",
-                            app.status === "pending"
-                              ? "bg-orange-100 text-orange-700"
-                              : app.status === "approved"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
-                          )}
-                        >
-                          {app.status}
-                        </Badge>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <ArrowRight className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <Button
                   variant="link"
                   className="w-full mt-6 text-primary font-bold"
+                  asChild
                 >
-                  View All Applications
+                  <Link href={`${pathName}/students`}>
+                    View All Applications
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
@@ -218,7 +200,7 @@ export default function SchoolAdminDashboard() {
                     Customize the fields applicants need to fill when applying
                     to your school.
                   </p>
-                  <Link href="/school/form-builder">
+                  <Link href={`${pathName}/form-builder`}>
                     <Button
                       variant="secondary"
                       className="w-full rounded-xl font-bold h-12"
@@ -226,46 +208,6 @@ export default function SchoolAdminDashboard() {
                       Open Form Builder
                     </Button>
                   </Link>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-sm rounded-[2rem] overflow-hidden">
-                <CardHeader className="p-8 pb-0">
-                  <CardTitle className="text-xl font-bold">
-                    System Health
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-8 space-y-6">
-                  {[
-                    {
-                      label: "Database",
-                      status: "Operational",
-                      icon: CheckCircle2,
-                      color: "text-green-500",
-                    },
-                    {
-                      label: "Email Server",
-                      status: "Operational",
-                      icon: CheckCircle2,
-                      color: "text-green-500",
-                    },
-                    {
-                      label: "File Storage",
-                      status: "Operational",
-                      icon: CheckCircle2,
-                      color: "text-green-500",
-                    },
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{item.label}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">
-                          {item.status}
-                        </span>
-                        <item.icon className={cn("h-4 w-4", item.color)} />
-                      </div>
-                    </div>
-                  ))}
                 </CardContent>
               </Card>
             </div>

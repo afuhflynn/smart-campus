@@ -4,6 +4,8 @@ namespace App\Controllers\Api;
 
 use App\Libraries\ApiRequestValidator;
 use App\Libraries\GetSession;
+use App\Models\SchoolAdminsModel;
+use App\Models\SchoolsModel;
 use CodeIgniter\RESTful\ResourceController;
 use App\Models\UsersModel;
 use Firebase\JWT\JWT;
@@ -12,10 +14,14 @@ class AuthController extends ResourceController
 {
     protected $format = "json";
     protected $usersModel;
+    protected $schoolsModel;
+    protected $schoolAdminsModel;
     protected $requestValidator;
     public function __construct()
     {
         $this->usersModel = new UsersModel();
+        $this->schoolsModel = new SchoolsModel();
+        $this->schoolAdminsModel = new SchoolAdminsModel();
         $this->requestValidator = new ApiRequestValidator();
     }
 
@@ -129,10 +135,23 @@ class AuthController extends ResourceController
            "secure" => getenv("CI_ENVIRONMENT") == "production"
         ]);
 
+         $school = [];
+        if($user['role'] == "school_admin"){
+            $admin_profile = $this->schoolAdminsModel->where("user_id", $user["id"])->first();
+
+            if(!$admin_profile) return $this->respond([
+                "error" => "Failed to retreive school profile",
+                "success" => false
+            ], 500);
+
+            $school = $this->schoolsModel->find($admin_profile["school_id"]);
+        }
+
         return $this->respond([
             "message" => "Login successful",
             "success" => true,
-            "user" => [...$user, "password" => null]
+            "user" => [...$user, "password" => null],
+            "school" => $school,
         ]);
 
     }
@@ -179,10 +198,23 @@ class AuthController extends ResourceController
             "success" => false
         ], 403);
 
+        $school = [];
+        if($user['role'] == "school_admin"){
+            $admin_profile = $this->schoolAdminsModel->where("user_id", $userId)->first();
+
+            if(!$admin_profile) return $this->respond([
+                "error" => "Failed to retreive school profile",
+                "success" => false
+            ], 500);
+
+            $school = $this->schoolsModel->find($admin_profile["school_id"]);
+        }
+
         return $this->respond([
             "message" => "Profile retreived successfully",
             "success" => true,
-            "user" => [...$user, "password" => null]
+            "user" => [...$user, "password" => null],
+            "school" => $school,
         ]);
     }
 }

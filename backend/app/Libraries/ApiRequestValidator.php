@@ -50,7 +50,7 @@ class ApiRequestValidator
         'unexpected'    => '{field} is not allowed.',
         'invalid_json'  => 'Invalid JSON payload.',
         'invalid_data'  => 'Payload must be an associative array.',
-        'unknown_rule'  => 'Unknown rule: {rule}.',
+        'unknown_rule'  => '{field} rule: {rule}.',
     ];
 
     /**

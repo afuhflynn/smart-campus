@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\Api\ApplicationController;
 use App\Controllers\Api\AuthController;
 use App\Controllers\Api\SchoolController;
 use CodeIgniter\Router\RouteCollection;
@@ -21,21 +22,29 @@ $routes->group("api", function ($routes) {
     $routes->post("login", [AuthController::class, "login"]);
   });
 
-  $routes->get("schools", [SchoolController::class, "list"]);
-  $routes->get("schools/(:alpha)", [SchoolController::class, "show"]);
-  $routes->post("schools/(:alpha)/apply", [SchoolController::class, "apply"]);
+  $routes->group("schools", function ($routes){
+    $routes->get("/", [SchoolController::class, "list"]);
+    $routes->get("profile/(:any)", [SchoolController::class, "showOne"]);
+    $routes->post("apply/(:num)", [ApplicationController::class, "apply"]);
+  });
 });
 
 
 // Protected routes
 $routes->group("api", ["filter" => "auth_filter"], function ($routes) {
 
-  $routes->group("", ["filter" => "school_admin_filter"], function ($routes) {
-
-  });
-
    $routes->group("auth", function ($routes) {
     $routes->get("logout", [AuthController::class, "logout"]);
     $routes->get("profile", [AuthController::class, "profile"]);
+  });
+  $routes->group("schools", function ($routes){
+    $routes->post("register", [SchoolController::class, "register"]);
+    $routes->get("my-application", [ApplicationController::class, "myApplication"]);
+    $routes->get("check-slug", [SchoolController::class, "checkSlug"]);
+
+    $routes->group("admin/(:num)", ["filter" => "school_admin_filter"], function ($routes) {
+      $routes->put("form-fields", [ApplicationController::class, "createForm"]);
+      $routes->get("applications", [ApplicationController::class, "showApplications"]);
+    });
   });
 });

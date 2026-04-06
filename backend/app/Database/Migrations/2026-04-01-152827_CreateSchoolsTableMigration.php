@@ -71,7 +71,7 @@ class CreateSchoolsTableMigration extends Migration
                 "constraint" => 255,
                 "null" => true,
             ],
-            "abbriviation" => [
+            "abbreviation" => [
                 "type" => "VARCHAR",
                 "constraint" => 100,
                 "null" => true,

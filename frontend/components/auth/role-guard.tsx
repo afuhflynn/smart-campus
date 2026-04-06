@@ -32,7 +32,7 @@ export function RoleGuard({ children, allowedRoles }: RoleGuardProps) {
         description: "You do not have permission to access this page.",
       });
 
-      redirectTo(data.user.role!);
+      redirectTo(data.user.role!, data.school.slug);
     }
   }, [allowedRoles, router, pathname, redirectTo, data?.user]);
 

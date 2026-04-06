@@ -11,20 +11,8 @@ import {
   Star,
 } from "lucide-react";
 import { SearchBar } from "@/components/home/search-bar";
-import { useUserProfile } from "@/hooks";
-import { useRedirect } from "@/hooks/use-redirect";
-import { useEffect } from "react";
 
 export default function Home() {
-  const { data, isPending } = useUserProfile();
-  const { redirectTo } = useRedirect();
-
-  useEffect(() => {
-    if (isPending) return;
-    if (data?.user) {
-      redirectTo(data.user.role);
-    }
-  }, [data?.user]);
   return (
     <PublicLayout>
       {/* Hero Section */}

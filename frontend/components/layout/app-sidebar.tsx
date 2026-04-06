@@ -5,19 +5,18 @@ import {
   BookOpen,
   FileText,
   CreditCard,
-  Bell,
   Settings,
-  LogOut,
   GraduationCap,
   Users,
   Library,
   ClipboardCheck,
   BarChart3,
+  ChartBarBig,
+  Bell,
 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -27,10 +26,10 @@ import {
   SidebarGroupContent,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { User } from "@/types/api.types";
-import { useLogout } from "@/hooks";
+import { useApplication } from "@/hooks";
 
 interface AppSidebarProps {
   user: User;
@@ -38,37 +37,67 @@ interface AppSidebarProps {
 
 export function AppSidebar({ user }: AppSidebarProps) {
   const pathname = usePathname();
-  const { mutate: logout, isPending: logingOut } = useLogout();
-  const router = useRouter();
-
-  const handleLogout = () => {
-    logout();
-    router.push("/");
-  };
+  const params = useParams();
+  const { schoolSlug } = params;
+  const { data } = useApplication();
 
   const getNavItems = () => {
     const common = [
       {
         title: "Dashboard",
         icon: LayoutDashboard,
-        url: `/${user.role.replace("_", "")}`,
+        url: schoolSlug
+          ? `/school/${schoolSlug}`
+          : user.role === "student"
+            ? "/student"
+            : "/admin",
       },
-      { title: "Notifications", icon: Bell, url: "/notifications" },
+      {
+        title: "Notifications",
+        icon: Bell,
+        url: "/notifications",
+        disabled: true,
+      },
     ];
 
     const roleSpecific: Record<string, any[]> = {
       student: [
-        { title: "My Courses", icon: BookOpen, url: "/student/courses" },
+        {
+          title: "My Courses",
+          icon: BookOpen,
+          url: "/student/courses",
+          disabled: data?.application.status !== "approved",
+        },
         {
           title: "Attendance",
           icon: ClipboardCheck,
           url: "/student/attendance",
+          disabled: data?.application.status !== "approved",
         },
-        { title: "Grades", icon: BarChart3, url: "/student/grades" },
-        { title: "Invoices", icon: CreditCard, url: "/student/invoices" },
+        {
+          title: "Grades",
+          icon: BarChart3,
+          url: "/student/grades",
+          disabled: data?.application.status !== "approved",
+        },
+        {
+          title: "Invoices",
+          icon: CreditCard,
+          url: "/student/invoices",
+          disabled: data?.application.status !== "approved",
+        },
+        {
+          title: "My Application",
+          icon: ChartBarBig,
+          url: "/student/my-application",
+        },
       ],
       lecturer: [
-        { title: "My Courses", icon: BookOpen, url: "/lecturer/courses" },
+        {
+          title: "My Courses",
+          icon: BookOpen,
+          url: "/lecturer/courses",
+        },
         {
           title: "Attendance",
           icon: ClipboardCheck,
@@ -78,24 +107,39 @@ export function AppSidebar({ user }: AppSidebarProps) {
       ],
       school_admin: [
         {
-          title: "Applications",
-          icon: FileText,
-          url: "/good-school/applications",
+          title: "Students",
+          icon: Users,
+          url: `/school/${schoolSlug}/students`,
         },
-        { title: "Students", icon: Users, url: "/good-school/students" },
         {
           title: "Form Builder",
           icon: Settings,
-          url: "/good-school/form-builder",
+          url: `/school/${schoolSlug}/form-builder`,
         },
       ],
       finance: [
-        { title: "Invoices", icon: CreditCard, url: "/finance/invoices" },
-        { title: "Payments", icon: BarChart3, url: "/finance/payments" },
+        {
+          title: "Invoices",
+          icon: CreditCard,
+          url: `/school/${schoolSlug}/finance/invoices`,
+        },
+        {
+          title: "Payments",
+          icon: BarChart3,
+          url: `/school/${schoolSlug}/finance/payments`,
+        },
       ],
       librarian: [
-        { title: "Catalog", icon: Library, url: "/library/catalog" },
-        { title: "Loans", icon: BookOpen, url: "/library/loans" },
+        {
+          title: "Catalog",
+          icon: Library,
+          url: `/school/${schoolSlug}/library/catalog`,
+        },
+        {
+          title: "Loans",
+          icon: BookOpen,
+          url: `/school/${schoolSlug}/library/loans`,
+        },
       ],
     };
 
@@ -129,14 +173,16 @@ export function AppSidebar({ user }: AppSidebarProps) {
                     asChild
                     tooltip={item.title}
                     isActive={pathname === item.url}
+                    disabled={item.disabled}
                     className={cn(
                       "h-11 rounded-xl transition-all",
                       pathname === item.url
                         ? "bg-primary/10 text-primary font-semibold"
                         : "text-muted-foreground hover:bg-accent",
+                      item.disabled ? "opacity-60" : "opacity-100",
                     )}
                   >
-                    <Link href={item.url}>
+                    <Link href={item.disabled ? "#" : item.url}>
                       <item.icon className="h-5 w-5" />
                       <span>{item.title}</span>
                     </Link>
@@ -147,30 +193,6 @@ export function AppSidebar({ user }: AppSidebarProps) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="p-4">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              tooltip="Settings"
-              className="h-11 rounded-xl text-muted-foreground hover:bg-accent"
-            >
-              <Settings className="h-5 w-5" />
-              <span>Settings</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={handleLogout}
-              tooltip="Logout"
-              disabled={logingOut}
-              className="h-11 rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive"
-            >
-              <LogOut className="h-5 w-5" />
-              <span>Logout</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   );
 }

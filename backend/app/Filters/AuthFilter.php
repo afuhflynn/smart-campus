@@ -33,7 +33,7 @@ class AuthFilter implements FilterInterface
         if($result === false){
             return Services::response()->setStatusCode(401)->setJSON([
                 "success" => false,
-                "error" => "Unauthorized access",
+                "error" => "Unauthenticated access",
             ]);
         }
     }

@@ -6,14 +6,26 @@
  */
 import { privateAxios, publicAxios } from "@/config/axios.config";
 import {
-  ListSchoolsPaginationParams,
-  LoginRespond,
-  LogInTypes,
+  Application,
+  type ApplicationListParams,
+  type ApplicationListResponse,
+  type ApplicationResponse,
+  type ApplicationStatus,
+  type ApplicationSubmitData,
+  type ListSchoolsPaginationParams,
+  type LogInTypes,
+  type LoginRespond,
   PaginationParams,
-  ProfileRespond,
-  ResponsePagination,
-  School,
-  SignUpTypes,
+  type ProfileRespond,
+  type ResponsePagination,
+  type School,
+  type SchoolRegisterPayload,
+  type SchoolRegisterResponse,
+  type SignUpTypes,
+  type SlugCheckResponse,
+  type StudentRegisterPayload,
+  type StudentRegisterResponse,
+  User,
 } from "@/types/api.types";
 
 // ===========================================
@@ -61,7 +73,12 @@ async function apiRequest<T>(
   } catch (error: unknown) {
     console.log({ error });
     if (error && typeof error === "object" && "response" in error) {
-      const axiosError = error as { response?: { data?: { error?: string } } };
+      const axiosError = error as {
+        response?: { data?: { error?: string; message?: string } };
+      };
+      if (axiosError.response?.data?.message) {
+        throw new Error(axiosError.response.data.message);
+      }
       if (axiosError.response?.data?.error) {
         throw new Error(axiosError.response.data.error);
       }
@@ -93,6 +110,37 @@ export const api = {
             isPublic: true,
           },
         ),
+      getBySlug: (slug: string): Promise<{ school: School } | null> =>
+        apiRequest(`/schools/profile/${slug}`, {
+          method: "GET",
+          isPublic: true,
+        }),
+    },
+    applications: {
+      list: (
+        schoolId: number,
+        params?: ApplicationListParams,
+      ): Promise<ApplicationListResponse> =>
+        apiRequest(
+          `/schools/admin/${schoolId}/applications?q=${params?.q}&status=${params?.status}&page=${params?.page}&limit=${params?.limit}`,
+          {
+            method: "GET",
+          },
+        ),
+      getById: (
+        id: number,
+      ): Promise<{ success: boolean; application: Application }> =>
+        apiRequest(`/applications/${id}`, {
+          method: "GET",
+        }),
+      myApplication: (): Promise<{
+        success: boolean;
+        application: Application;
+        school: School;
+      }> =>
+        apiRequest("/schools/my-application", {
+          method: "GET",
+        }),
     },
   },
   mutations: {
@@ -110,6 +158,69 @@ export const api = {
         }),
       logout: () =>
         apiRequest("/auth/logout", {
+          method: "GET",
+        }),
+    },
+    schools: {
+      register: (
+        data: SchoolRegisterPayload,
+      ): Promise<SchoolRegisterResponse> =>
+        apiRequest("/schools/register", {
+          method: "POST",
+          body: data,
+        }),
+      checkSlug: (slug: string): Promise<SlugCheckResponse> =>
+        apiRequest(`/schools/check-slug?slug=${slug}`, {
+          method: "GET",
+        }),
+      apply: (data: ApplicationSubmitData): Promise<ApplicationResponse> =>
+        apiRequest(`/schools/apply/${data.school_id}`, {
+          method: "POST",
+          isPublic: true,
+          body: {
+            applicant_user_id: data.applicant_user_id,
+            applicant_email: data.applicant_email,
+            applicant_name: data.applicant_name,
+            payload: [data.payload], // This array syntax allows for safe validation on the backend. @hint: A better solution can be used later.
+          },
+        }),
+      updateFormFields: (
+        schoolId: number,
+        fields: unknown[],
+      ): Promise<{ success: boolean; message: string }> =>
+        apiRequest(`/schools/admin/${schoolId}/form-fields`, {
+          method: "PUT",
+          body: { registration_fields: fields },
+        }),
+    },
+    applications: {
+      approve: (
+        id: number,
+        data?: { notes?: string },
+      ): Promise<{ success: boolean; message: string }> =>
+        apiRequest(`/applications/${id}/approve`, {
+          method: "POST",
+          body: data ?? {},
+        }),
+      reject: (
+        id: number,
+        data: { reason: string },
+      ): Promise<{ success: boolean; message: string }> =>
+        apiRequest(`/applications/${id}/reject`, {
+          method: "POST",
+          body: data,
+        }),
+    },
+    students: {
+      register: (
+        data: StudentRegisterPayload,
+      ): Promise<StudentRegisterResponse> =>
+        apiRequest("/students/register", {
+          method: "POST",
+          body: data,
+        }),
+      checkEmail: (email: string): Promise<{ exists: boolean; user?: User }> =>
+        apiRequest(`/students/check-email?email=${encodeURIComponent(email)}`, {
           method: "GET",
         }),
     },

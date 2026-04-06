@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class SchoolAdminsModel extends Model
 {
-    protected $table            = 'schooladmins';
+    protected $table            = 'school_admins';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';

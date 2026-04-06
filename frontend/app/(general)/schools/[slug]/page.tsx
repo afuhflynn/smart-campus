@@ -16,10 +16,10 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { schoolService } from "@/lib/mocks/school-service";
-import { DynamicForm } from "@/components/shared/dynamic-form";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
+import { useSchool } from "@/hooks";
 
 export default function SchoolProfilePage({
   params,
@@ -28,10 +28,8 @@ export default function SchoolProfilePage({
 }) {
   const { slug } = use(params);
 
-  const { data: school, isLoading } = useQuery({
-    queryKey: ["school", slug],
-    queryFn: () => schoolService.getSchoolBySlug(slug),
-  });
+  const { data, isLoading } = useSchool(slug);
+  const school = data?.school;
 
   if (isLoading)
     return <div className="container py-20 text-center">Loading...</div>;
@@ -51,7 +49,7 @@ export default function SchoolProfilePage({
       {/* Hero */}
       <div className="relative h-[400px] md:h-[500px]">
         <Image
-          src={school.banner}
+          src={school.banner!}
           alt={school.name}
           fill
           className="object-cover"
@@ -69,7 +67,7 @@ export default function SchoolProfilePage({
             <div className="flex flex-col md:flex-row items-end gap-6">
               <div className="h-24 w-24 md:h-32 md:w-32 rounded-3xl border-4 border-white bg-white p-2 shadow-2xl">
                 <Image
-                  src={school.logo}
+                  src={school.logo_url!}
                   alt={school.name}
                   width={128}
                   height={128}
@@ -82,26 +80,28 @@ export default function SchoolProfilePage({
                 </h1>
                 <div className="flex flex-wrap items-center gap-4 text-white/90">
                   <span className="flex items-center gap-1">
-                    <MapPin className="h-4 w-4" /> {school.location}
+                    <MapPin className="h-4 w-4" /> {school.address}
                   </span>
                   <span className="flex items-center gap-1">
-                    <GraduationCap className="h-4 w-4" /> {school.tuition}
+                    <GraduationCap className="h-4 w-4" /> {school.abbreviation}
                   </span>
                   <span className="flex items-center gap-1 text-yellow-400">
                     <Star className="h-4 w-4 fill-current" /> 4.9 (120 reviews)
                   </span>
                 </div>
               </div>
-              <div className="hidden md:block">
-                <Link href={`/schools/${slug}/apply`}>
-                  <Button
-                    size="lg"
-                    className="rounded-2xl px-10 font-bold shadow-xl shadow-primary/20 h-14"
-                  >
-                    Apply Now
-                  </Button>
-                </Link>
-              </div>
+              {school.registration_fields && (
+                <div className="hidden md:block">
+                  <Link href={`/schools/${slug}/apply`}>
+                    <Button
+                      size="lg"
+                      className="rounded-2xl px-10 font-bold shadow-xl shadow-primary/20 h-14"
+                    >
+                      Apply Now
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -114,15 +114,11 @@ export default function SchoolProfilePage({
             <section>
               <h2 className="text-2xl font-bold mb-4">About the Institution</h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                {school.description} Lorem ipsum dolor sit amet, consectetur
-                adipiscing elit. Sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                consequat.
+                {school.description}
               </p>
             </section>
 
-            <Tabs defaultValue="programs" className="w-full">
+            {/* <Tabs defaultValue="programs" className="w-full">
               <TabsList className="w-full justify-start h-12 bg-muted/50 p-1 rounded-xl mb-8">
                 <TabsTrigger value="programs" className="rounded-lg px-8">
                   Programs
@@ -181,33 +177,35 @@ export default function SchoolProfilePage({
                   ))}
                 </div>
               </TabsContent>
-            </Tabs>
+            </Tabs> */}
 
-            <section id="apply-section" className="pt-12 border-t">
-              <div className="bg-primary rounded-[3rem] p-12 md:p-20 text-center text-primary-foreground relative overflow-hidden">
-                <div className="relative z-10">
-                  <h2 className="text-4xl font-bold mb-4">
-                    Start Your Journey
-                  </h2>
-                  <p className="text-primary-foreground/80 text-lg mb-10 max-w-xl mx-auto">
-                    Our multi-step application process is designed to be simple
-                    and efficient. Get started today!
-                  </p>
-                  <Link href={`/schools/${slug}/apply`}>
-                    <Button
-                      size="lg"
-                      variant="secondary"
-                      className="rounded-2xl px-12 font-bold h-16 text-lg"
-                    >
-                      Begin Application
-                    </Button>
-                  </Link>
+            {school.registration_fields && (
+              <section id="apply-section" className="pt-12 border-t">
+                <div className="bg-primary rounded-[3rem] p-12 md:p-20 text-center text-primary-foreground relative overflow-hidden">
+                  <div className="relative z-10">
+                    <h2 className="text-4xl font-bold mb-4">
+                      Start Your Journey
+                    </h2>
+                    <p className="text-primary-foreground/80 text-lg mb-10 max-w-xl mx-auto">
+                      Our multi-step application process is designed to be
+                      simple and efficient. Get started today!
+                    </p>
+                    <Link href={`/schools/${slug}/apply`}>
+                      <Button
+                        size="lg"
+                        variant="secondary"
+                        className="rounded-2xl px-12 font-bold h-16 text-lg"
+                      >
+                        Begin Application
+                      </Button>
+                    </Link>
+                  </div>
+                  {/* Decoration */}
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+                  <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
                 </div>
-                {/* Decoration */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
-              </div>
-            </section>
+              </section>
+            )}
           </div>
 
           {/* Sidebar */}
@@ -234,9 +232,9 @@ export default function SchoolProfilePage({
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
-                      Tuition
+                      Abbreviation
                     </p>
-                    <p className="font-bold">{school.tuition}</p>
+                    <p className="font-bold">{school.abbreviation}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -247,7 +245,7 @@ export default function SchoolProfilePage({
                     <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
                       Location
                     </p>
-                    <p className="font-bold">{school.location}</p>
+                    <p className="font-bold">{school.address}</p>
                   </div>
                 </div>
               </CardContent>
@@ -260,8 +258,15 @@ export default function SchoolProfilePage({
                   Our admissions team is here to help you with any questions
                   about the application process.
                 </p>
-                <Button variant="outline" className="w-full rounded-xl">
-                  Contact Admissions
+                <Button
+                  variant="outline"
+                  className="w-full rounded-xl"
+                  asChild
+                  disabled={!school.email}
+                >
+                  <Link href={`mailto:${school.email}`} target="_blank">
+                    Contact Admissions
+                  </Link>
                 </Button>
               </CardContent>
             </Card>

@@ -15,9 +15,9 @@ import {
   LogOut,
 } from "lucide-react";
 import { useState } from "react";
-import { useLogout, useUserProfile } from "@/hooks";
+import { useUserProfile } from "@/hooks";
 import { Skeleton } from "../ui/skeleton";
-import { Button } from "../ui/button";
+import { UserButton } from "../user/user-button";
 
 const navItems = [
   { name: "Schools", href: "/schools", icon: Search },
@@ -29,8 +29,7 @@ const navItems = [
 export function Navbar() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { data, isPending } = useUserProfile();
-  const { mutate: logout, isPending: isLogingOut } = useLogout();
+  const { data, isPending } = useUserProfile("/");
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
@@ -87,17 +86,19 @@ export function Navbar() {
                   </Link>
                 </>
               ) : (
-                <Button
-                  variant={"outline"}
-                  onClick={() => logout()}
-                  disabled={isLogingOut}
-                  className="rouned-full"
-                >
-                  <LogOut />
-                  Logout
-                </Button>
+                <>
+                  <Link
+                    href="/schools/register"
+                    className="inline-flex h-10 items-center justify-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all active:scale-95"
+                  >
+                    Register Institution
+                  </Link>
+                </>
               )}
             </>
+          )}
+          {data && data.user && (
+            <UserButton user={data.user} schoolSlug={data.school.slug} />
           )}
         </div>
 
@@ -156,17 +157,20 @@ export function Navbar() {
                     </Link>
                   </>
                 ) : (
-                  <Button
-                    variant={"outline"}
-                    onClick={() => logout()}
-                    disabled={isLogingOut}
-                    className="rounded-full w-full"
-                  >
-                    <LogOut />
-                    Logout
-                  </Button>
+                  <>
+                    <Link
+                      href="/schools/register"
+                      className="mt-2 flex h-12 items-center justify-center rounded-xl bg-primary text-base font-bold text-primary-foreground shadow-lg shadow-primary/25"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Register Institution
+                    </Link>
+                  </>
                 )}
               </>
+            )}
+            {data && data.user && (
+              <UserButton user={data.user} schoolSlug={data.school.slug} />
             )}
           </div>
         </div>

@@ -41,10 +41,38 @@ const gradesData = [
 ];
 
 import { RoleGuard } from "@/components/auth/role-guard";
-import { useUserProfile } from "@/hooks";
+import { useApplication, useUserProfile } from "@/hooks";
 
 export default function StudentDashboard() {
   const { data, isPending } = useUserProfile();
+  const { data: applicationData, isPending: loadingApplicationData } =
+    useApplication();
+
+  const isLoading = isPending || loadingApplicationData;
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (applicationData?.application.status !== "approved") {
+    return (
+      <RoleGuard allowedRoles={["student"]}>
+        <DashboardLayout>
+          <div className="space-y-8">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                Welcome back, {data?.user.name ?? "Users"}!
+              </h1>
+              <p className="text-muted-foreground">
+                Your application is still under approval or you haven't sent any
+                applications yet.
+              </p>
+            </div>
+          </div>
+        </DashboardLayout>
+      </RoleGuard>
+    );
+  }
   return (
     <RoleGuard allowedRoles={["student"]}>
       <DashboardLayout>
